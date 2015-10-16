@@ -1,50 +1,134 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/css/reset.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.css">
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
-  </head>
-  <body class="mixpanel-platform-body">
-    <div class="mixpanel-platform-section">
-      <div id="eventSelect" style="float: left;"></div>
-      <div id="by" class="mixpanel-platform-label" style="margin-left: 10px; display: none;">by</div>
-      <div id="propSelect" style="float: left;"></div>
-      <div id="dateSelect" style="float: right;"></div>
-      <div style="clear: both;"></div>
-      <div id="graph"></div>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <style>
+
+    .circle-div {
+        height: 400px;
+        display: inline-block;
+        width: 300px;
+    }
+
+    .app-launches {
+
+
+    }
+    .numberCircle {
+        border-radius: 50%;
+        width: 200px;
+
+        height: 200px;
+        padding: 8
+        background: #fff;
+        border: 2px solid #666;
+        color: #666;
+        text-align: cent
+        font: 48px Arial, sans-serif !important;
+        font-size: 48px !important;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 200px;
+    }
+    .text {
+
+        font: 72px;
+    }
+    .span-css {
+        background-color: white;
+        border: 1px solid #7a8195;
+        border-radius: 5px;
+        color: #7a8195;
+        display: block;
+        margin-bottom: 25px;
+        padding: 10px;
+        max-width: 60%;
+        margin-top: 5%;
+        text-align: center;
+    }
+
+    .graphs {
+        width: 80%;
+        height: 500px;
+        margin: 50px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="app-launches circle-div">
+        <span class="span-css center-block"> Total Users</span>
+        <div class="numberCircle center-block"></div>
     </div>
-    <div id="table"></div>
+    <div class="avg-monthly-visits circle-div">
+        <span class="span-css center-block"> Monthly Active Users</span>
+        <div class="numberCircle center-block"></div>
+    </div>
+    <div class="avg-logins circle-div">
+        <span class="span-css center-block"> DAU/MAU</span>
+        <div class="numberCircle center-block"></div>
+    </div>
+
+
     <script>
-      var eventSelect = $('#eventSelect').MPEventSelect();
-      var propSelect  = $('#propSelect').MPPropertySelect();
-      var dateSelect  = $('#dateSelect').MPDatepicker();
-      var eventGraph  = $('#graph').MPChart({chartType: 'line'});
-      var eventTable  = $('#table').MPTable({
-        showPercentages: true,
-        firstColHeader: 'Event'
-      });
+        /* Average Monthly Visits per User */
+        var avgMonthlyVisits = MP.api.query('/api/2.0/segmentation/', {
+            from: moment().subtract(1, 'months'),
+            to: moment(),
+            event: 'App Install',
+            unit: 'month',
+            type: 'average'
+            }, {dataType:'json'}
+        ).done(function(data){
+            var finalMonth = data['data']["values"]["App Install"]
+            var key = _.keys(finalMonth)[0]
 
-      var runQuery = function() {
-        var eventName = eventSelect.MPEventSelect('value'),
-            propName  = propSelect.MPPropertySelect('value'),
-            dateRange = dateSelect.MPDatepicker('value');
+            var finalMonthData = Math.round(finalMonth[key],2)
 
-        if (eventName) {
-          MP.api.segment(eventName, propName, dateRange).done(function(results) {
-            eventGraph.MPChart('setData', results);
-            eventTable.MPTable('setData', results);
-          });
-        }
-      };
-      eventSelect.on('change', function(e, eventName) {
-        propSelect.MPPropertySelect('setEvent', eventName);
-        $("#by").show();
-        runQuery();
-      });
-      propSelect.on('change', runQuery);
-      dateSelect.on('change', runQuery);
+            var circle = $('.app-launches > .numberCircle')
+            circle.text(finalMonthData.toString())
+
+        });
+
+        var totalsQuery = MP.api.events('App Open', {
+            unit: 'month'
+        }).done(function(data){
+            var key = _.keys(data.values())[0]
+            var launchData = data.values()[key]
+
+            /* Find the final Month*/
+            var finalMonth = _.sortBy(_.keys(launchData))[_.keys(launchData).length -1]
+
+            var finalMonthData = launchData[finalMonth]
+
+            var circle = $('.avg-monthly-visits > .numberCircle')
+            circle.text(finalMonthData.toString())
+
+        });
+
+        /* AVG Logins per user */
+
+        var avgLogins = MP.api.query('/api/2.0/segmentation/', {
+            from: moment().subtract(1, 'months'),
+            to: moment(),
+            event: 'Registration Complete',
+            unit: 'month',
+            type: 'average'
+            }, {dataType:'json'}
+        ).done(function(data){
+            var finalMonth = data['data']["values"]["App Install"]
+            var key = _.keys(finalMonth)[0]
+            // var finalMonthData = Math.round(finalMonth[key],2)
+
+            var circle = $('.avg-logins > .numberCircle')
+            circle.text("0");
+        });
+
+
+
     </script>
-  </body>
-</html>
