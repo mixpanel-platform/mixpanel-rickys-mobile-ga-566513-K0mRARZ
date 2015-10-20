@@ -8,6 +8,10 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <style>
+    
+    .first-section {
+      max-width: 100%;
+    }
 
     .circle-div {
         height: 400px;
@@ -57,21 +61,34 @@
         height: 500px;
         margin: 50px;
     }
+    
+    .live-view {
+      width: 30%;
+      height: 300px;
+      
+    }
     </style>
 </head>
 
 <body>
-    <div class="app-launches circle-div">
-        <span class="span-css center-block"> Total Users</span>
-        <div class="numberCircle center-block"></div>
+    <div class="first-section"> 
+      <div class="app-launches circle-div">
+          <span class="span-css center-block"> Total Users</span>
+          <div class="numberCircle center-block"></div>
+      </div>
+      <div class="avg-monthly-visits circle-div">
+          <span class="span-css center-block"> Monthly Active Users</span>
+          <div class="numberCircle center-block"></div>
+      </div>
+      <div class="avg-logins circle-div">
+          <span class="span-css center-block"> DAU/MAU</span>
+          <div class="numberCircle center-block"></div>
+      </div>
     </div>
-    <div class="avg-monthly-visits circle-div">
-        <span class="span-css center-block"> Monthly Active Users</span>
-        <div class="numberCircle center-block"></div>
-    </div>
-    <div class="avg-logins circle-div">
-        <span class="span-css center-block"> DAU/MAU</span>
-        <div class="numberCircle center-block"></div>
+    <div class="second-section">
+      <div class="live-view">
+    </div>  
+      
     </div>
 
 
